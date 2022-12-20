@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package p2r;
+package k2c;
 
 enum Cause {
     UNDEFINED = 0;
@@ -10,57 +10,27 @@ enum Cause {
     NO_RESOURCES = 4;
 }
 
-enum TerminateReason {
-    UNKNOWN = 0;
-    PLANNED = 1;
-    UNPLANNED = 2;
+message ProtocolVersion {
+    int32 major = 1;
+    int32 minor = 2;
 }
 
-message ConnectionId {
-    message ProtocolVersion {
-        int32 major = 1;
-        int32 minor = 2;
-    }
+message AlmanacInfo {
+    int64 computaion_time = 1;
+    int32 version = 2;
+    int32 format = 3;
+    int32 crc = 4;
+}
+message FpsCapabilities {
     ProtocolVersion protocol_version = 1;
-    int32 fp_id = 2;
-    int32 rm_id = 3;
+    int32 almanac_format = 2;  
+    optional AlmanacInfo almanac_info = 3;  
 }
-
-message Response {
+message BaseResponse {
     Cause cause = 1;
-    optional ConnectionId connection_id = 2;
-}
-
-message SetupRequest {
-    ConnectionId connection_id = 1;
-}
-
-message ReleaseRequest {
-    ConnectionId connection_id = 1;
-    optional string reason = 2;
-}
-
-message TerminateWarning {
-    ConnectionId connection_id = 1;
-    TerminateReason reason = 2;
-    int32 warning_id = 3;
-    int32 timeout = 4;
-}
-
-message TerminateCancel {
-    ConnectionId connection_id = 1;
-    int32 warning_id = 2;
-}
-
-message RestoreWarning {
-    ConnectionId connection_id = 1;
-    int32 timeout = 2;
 }
 
 service P2R {
-    rpc P2rSetupConnection( SetupRequest ) returns (Response);
-    rpc P2rReleaseConnection( ReleaseRequest) returns (Response);
-    rpc P2rTerminateWarning( TerminateWarning ) returns (Response);
-    rpc P2rTerminateWarningCancel( TerminateCancel ) returns (Response);
-    rpc P2rRestoreWarning( RestoreWarning ) returns (Response); 
+    rpc K2cFpsCapalilitesRequest() returns (FpsCapabilities);
+    rpc K2cUpdateAlmanac() returns (BaseResponse)
 }
