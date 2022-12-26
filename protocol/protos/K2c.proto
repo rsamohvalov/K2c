@@ -5,9 +5,8 @@ package k2c;
 enum Cause {
     UNDEFINED = 0;
     SUCCESS = 1;
-    TIMEOUT = 2;
-    ERROR = 3;
-    NO_RESOURCES = 4;
+    CRC_ERROR = 2;
+    FORMAT_ERROR = 3;
 }
 
 message ProtocolVersion {
