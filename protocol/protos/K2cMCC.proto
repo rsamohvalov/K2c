@@ -1,0 +1,90 @@
+
+syntax = "proto3";
+
+import "K2cFSP.proto";
+
+package k2cmcc;
+
+enum Cause {
+    UNDEFINED = 0;
+    SUCCESS = 1;
+    CRC_ERROR = 2;
+    FORMAT_ERROR = 3;
+}
+
+message ProtocolVersion {
+    int32 major = 1;
+    int32 minor = 2;
+}
+
+message AlmanacInfo {
+    int64 computaion_time = 1;
+    int32 version = 2;
+    int32 format = 3;
+    int32 crc = 4;
+}
+
+message FpsCapabilities {
+    ProtocolVersion protocol_version = 1;
+    int32 almanac_format = 2;  
+    optional AlmanacInfo almanac_info = 3;  
+}
+
+message BaseResponse {
+    Cause cause = 1;
+}
+
+message Almanac {
+    AlmanacInfo info = 1; 
+}
+
+message K2cFpsHeader {
+    ProtocolVersion proto = 1;
+    int32 fps_id = 2;
+}
+
+message AlmanacRequest {
+    K2cFpsHeader fps_header = 1;
+    repeated int32 ka_id_list = 2;
+}
+message AlmanacResponse {
+    K2cFpsHeader fps_header = 1;
+    Cause cause = 2;
+    optional Almanac almanac = 3;
+}
+
+message AlmanacUpdateSubscribeRequest {
+    K2cFpsHeader fps_header = 1;
+    int32 almanac_subscr_id = 2;
+    repeated int32 ka_id_list = 3;
+}
+message AlmanacUpdateSubscribeResponse {
+    int32 almanac_subscr_id = 1;
+    AlmanacResponse response = 2;
+}
+message UpdateSubscriptionResponse {
+    int32 almanac_subscr_id = 1;
+    Cause cause = 2;
+}
+
+message DeleteSubscriptionRequest {
+    K2cFpsHeader fps_header = 1;
+    int32 almanac_subscr_id = 2;
+}
+
+message EchoRequest {
+    K2cFpsHeader fps_header = 1;
+    AlmanacInfo almanac_info = 2;
+}
+message EchoResponse {
+    Cause cause = 1;
+    AlmanacInfo almanac_info = 2;
+}
+
+service K2cMCC {
+    rpc K2cAlmanacRequest(AlmanacRequest) returns (AlmanacResponse) {}
+    rpc K2cUpdateAlmanacSubscribe(AlmanacUpdateSubscribeRequest) returns (stream AlmanacUpdateSubscribeResponse) {}
+    rpc K2cUpdateSubscription(AlmanacUpdateSubscribeRequest) returns (UpdateSubscriptionResponse) {}
+    rpc K2cDeleteSubscription(DeleteSubscriptionRequest) returns (BaseResponse) {}
+    rpc K2cEcho(EchoRequest) returns (EchoResponse){}
+}

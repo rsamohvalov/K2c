@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package k2c;
+
+enum Cause {
+    UNDEFINED = 0;
+    SUCCESS = 1;
+    ERROR = 2;
+    FORMAT_ERROR = 3;
+    PLANNING = 4;
+    NO_SHCEDULE = 5;
+    NO_AVAIL_SCHEDULE = 6;
+    SUBSCRIBED = 7;
+    SCHEDULE_READY = 8;
+}
+
+message ProtocolVersion {
+    int32 major = 1;
+    int32 minor = 2;
+}
+
+message CrlSetupId {
+    int32 crl_setup_request_id = 1;
+    int32 sc_id = 2;
+}
+
+message CrlSetupRequest {
+    CrlSetupId crl_setup_id = 1;
+    int32 time_start = 2;
+    int32 duration = 3;
+    int32 priority = 4;
+}
+message CrlSetupResponse {
+    Cause cause = 1;
+    CrlSetupId crl_setup_id = 2;
+}
+
+message ScheduleRequest {
+    CrlSetupId crl_setup_id = 1;
+}
+message Schedule {
+    message TimeBlock {
+        int32 start_time = 1;
+        int32 duration = 2;
+    }
+    repeated TimeBlock schedule = 1;
+}
+message ScheduleResponse {
+    Cause cause = 1;
+    CrlSetupId crl_setup_id = 2;
+    optional Schedule schedule = 3;
+}
+
+message CrlStatusSubscription {
+   CrlSetupId crl_setup_id = 1;
+   int32 crl_status_id = 2;
+   int32 crl_status_type = 3; 
+}
+message CrlStatusNotification {
+    Cause cause = 1;
+    CrlSetupId crl_setup_id = 2;
+    int32 crl_status_id = 3;
+    int32 crl_status = 4; 
+}
+
+service K2C {
+    rpc K2cCrlSetup(CrlSetupRequest) returns (CrlSetupResponse) {}
+    rpc K2cScheduleRequest(ScheduleRequest) returns (ScheduleResponse){}
+    rpc K2cScheduleReadySubscribe(ScheduleRequest) returns (stream ScheduleResponse) {}
+    rpc K2cCrlStatusSubscribe(CrlStatusSubscription) returns (stream CrlStatusNotification){}
+}
