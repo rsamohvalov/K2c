@@ -8,7 +8,7 @@ enum Cause {
     ERROR = 2;
     FORMAT_ERROR = 3;
     PLANNING = 4;
-    NO_SHCEDULE = 5;
+    NO_SCHEDULE = 5;
     NO_AVAIL_SCHEDULE = 6;
     SUBSCRIBED = 7;
     SCHEDULE_READY = 8;
