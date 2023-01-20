@@ -1,0 +1,56 @@
+openapi: 3.0.0
+info:
+  title: Общие данные для интерфейса K2c
+  description: |
+    Общие данные.
+  version: 1.0.
+
+components:
+  schemas:
+    AlmanacInfo:
+      type: object
+      properties:
+        time:
+          type: integer
+          description: Время расчета
+        version:
+          type: integer
+          description: Версия альманаха
+        crc:
+          type: integer
+          description: Контрольная сумма альманаха
+    
+    AlmanacRecord:
+      type: object
+      properties:
+        value: 
+          type: string
+
+    Almanac:
+      type: object
+      properties:
+        info: 
+          $ref: '#/components/schemas/AlmanacInfo'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/AlmanacRecord'
+    
+    KaIdFilter:
+      type: array
+      items:
+        type: integer
+    
+    Error:
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+          example: 127
+        message:
+          type: string
+          example: Сеть недоступна

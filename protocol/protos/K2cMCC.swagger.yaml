@@ -41,7 +41,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: '#/components/schemas/Almanac'
+                $ref: 'K2cCommonData.yaml#/components/schemas/Almanac'
         "404":
           description: Данные по запросу альманаха не найдены
           content: {}
@@ -53,7 +53,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: 'K2cCommonData.yaml#/components/schemas/Error'
   /echo:  
     post:
       tags:
@@ -73,7 +73,7 @@ paths:
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: '#/components/schemas/AlmanacInfo'
+              $ref: 'K2cCommonData.yaml#/components/schemas/AlmanacInfo'
         required: true
       responses:
         "200":
@@ -81,7 +81,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: '#/components/schemas/AlmanacInfo'
+                $ref: 'K2cCommonData.yaml#/components/schemas/AlmanacInfo'
         "504":
           description: Таймаут выполнения запроса
           content: {}
@@ -90,7 +90,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: 'K2cCommonData.yaml#/components/schemas/Error'
   
   /almanac/subscribe:
     post:
@@ -119,7 +119,7 @@ paths:
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: '#/components/schemas/KaIdFilter'
+              $ref: 'K2cCommonData.yaml#/components/schemas/KaIdFilter'
         required: true
       responses:
         "200":
@@ -139,7 +139,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: 'K2cCommonData.yaml#/components/schemas/Error'
   
   /almanac/subscribe/{subscr_id}:  
     put:
@@ -169,7 +169,7 @@ paths:
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: '#/components/schemas/KaIdFilter'
+              $ref: 'K2cCommonData.yaml#/components/schemas/KaIdFilter'
         required: true
       responses:
         "200":
@@ -187,7 +187,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: 'K2cCommonData.yaml#/components/schemas/Error'
     delete:
       tags:
       - Almanac
@@ -221,54 +221,8 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: '#/components/schemas/Error'  
+                $ref: 'K2cCommonData.yaml#/components/schemas/Error'  
 
 components:
   schemas:
-    AlmanacInfo:
-      type: object
-      properties:
-        time:
-          type: integer
-          description: Время расчета
-        version:
-          type: integer
-          description: Версия альманаха
-        crc:
-          type: integer
-          description: Контрольная сумма альманаха
     
-    AlmanacRecord:
-      type: object
-      properties:
-        value: 
-          type: string
-
-    Almanac:
-      type: object
-      properties:
-        info: 
-          $ref: '#/components/schemas/AlmanacInfo'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/AlmanacRecord'
-    
-    KaIdFilter:
-      type: array
-      items:
-        type: integer
-    
-    Error:
-      required:
-      - code
-      - message
-      type: object
-      properties:
-        code:
-          type: integer
-          format: int32
-          example: 127
-        message:
-          type: string
-          example: Сеть недоступна
