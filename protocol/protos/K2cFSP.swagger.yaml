@@ -1,16 +1,248 @@
 openapi: 3.0.0
 info:
-  title: Сервис интерфейса P2r
+  title: Сервис K2cFSP интерфейса K2c
   description: |
-    Сервис для реализации процедур интерфейса P2r.
+    Сервис МПС ШЛС.
   version: 1.0.
 servers:
-- url: "{apiRoot}/p2r-service/v1.0"
+- url: "{apiRoot}/k2c-service/v1.0"
   variables:
     apiRoot:
       description: Адрес подключения к сервису
       default: http://localhost:8888
 paths:
+  /almanac/{fsp_id}/{subscr_id}:
+    post:
+      tags:
+      - Almanac
+      operationId: AlmanacUpdateNotification
+      parameters:
+      - name: fsp_id
+        in: path
+        description: Идентификатор МПС ШЛС
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+        example: 10
+      - name: subscr_id
+        in: query
+        description: Идентификатор подписки
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+        example: 10  
+      requestBody:
+        description: Данные альманаха
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/Almanac'
+        required: true
+      responses:
+        "200":
+          description: Обновление принято
+          content: {}
+        "504":
+          description: Таймаут выполнения запроса
+          content: {}
+        default:
+          description: Другие ошибки
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  
+  
+  
+  
+  /almanac:
+    get:
+      tags:
+      - Almanac
+      operationId: AlmanacRequest
+      parameters:
+      - name: fsp_id
+        in: query
+        description: Идентификатор МПС ШЛС
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+        example: 10
+      - name: filter
+        in: query
+        description: Идентификаторы КА
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: integer
+      responses:
+        "200":
+          description: Содержимое альманаха
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Almanac'
+        "404":
+          description: Данные по запросу альманаха не найдены
+          content: {}
+        "504":
+          description: Таймаут выполнения запроса
+          content: {}
+        default:
+          description: Другие ошибки
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /almanac/subscribe:
+    post:
+      tags:
+      - Almanac
+      operationId: AlmanacUpdateSubscribe
+      parameters:
+      - name: fsp_id
+        in: query
+        description: Идентификатор МПС ШЛС
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+        example: 10
+      - name: subscr_id
+        in: query
+        description: Идентификатор подписки
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+        example: 10  
+      requestBody:
+        description: Фильтр по идентификаторам КА
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/KaIdFilter'
+        required: true
+      responses:
+        "200":
+          description: Подписка зарегистрирована
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id: {type: integer, description: Идентификатор подписки}
+                  url: {type: string, description: URL подписки }
+        "504":
+          description: Таймаут выполнения запроса
+          content: {}
+        default:
+          description: Другие ошибки
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /almanac/subscribe/{subscr_id}:  
+    put:
+      tags:
+      - Almanac
+      operationId: AlmanacChangeUpdateSubscription
+      parameters:
+      - name: fsp_id
+        in: query
+        description: Идентификатор МПС ШЛС
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+        example: 10
+      - name: subscr_id
+        in: path
+        description: Идентификатор подписки
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+        example: 10  
+      requestBody:
+        description: Фильтр по идентификаторам КА
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/KaIdFilter'
+        required: true
+      responses:
+        "200":
+          description: Подписка обновлена
+          content:
+             application/json:
+              schema:
+                type: integer
+                description: Идентификатор подписки        
+        "504":
+          description: Таймаут выполнения запроса
+          content: {}
+        default:
+          description: Другие ошибки
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      tags:
+      - Almanac
+      operationId: AlmanacDeleteUpdateSubscription
+      parameters:
+      - name: fsp_id
+        in: query
+        description: Идентификатор МПС ШЛС
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+        example: 10
+      - name: subscr_id
+        in: query
+        description: Идентификатор подписки
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+        example: 10  
+      responses:
+        "200":
+          description: Подписка отменена
+          content: {}
+        "504":
+          description: Таймаут выполнения запроса
+          content: {}
+        default:
+          description: Другие ошибки
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Error'  
+
+
+
   /connections:
     post:
       tags:
@@ -40,6 +272,7 @@ paths:
             application/json;charset=UTF-8:
               schema:
                 $ref: '#/components/schemas/Error'
+  
   /connections/{rm_id}:
     delete:
       tags:
