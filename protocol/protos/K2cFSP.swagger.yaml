@@ -56,8 +56,150 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
   
+  /crl:
+    post:
+      tags:
+      - CRL
+      operationId: CrlSetup
+      parameters:
+      - name: crl_id
+        in: query
+        description: Идентификатор запроса на соедиинение КРЛ
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+        example: 10
+      - name: sc_id
+        in: query
+        description: Идентификатор КА
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+        example: 10  
+      requestBody:
+        description: Параметры сеанса КРЛ
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CrlConnection'
+        required: true
+      responses:
+        "200":
+          description: Запрос на расчет принят
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id: {type: integer, description: Идентификатор запроса}
+                  url: {type: string, description: URL для управления запросом }
+        "504":
+          description: Таймаут выполнения запроса
+          content: {}
+        default:
+          description: Другие ошибки
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Error'
   
-  
+  /crl/{crl_id}:
+    get:
+      tags:
+      - CRL
+      operationId: CrlScheduleGet
+      parameters:
+      - name: crl_id
+        in: path
+        description: Идентификатор запроса на соедиинение КРЛ
+        required: true
+        schema:
+          type: integer
+        example: 10
+      - name: sc_id
+        in: query
+        description: Идентификатор КА
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+        example: 10  
+      responses:
+        "200":
+          description: Запрос на расчет принят
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CrlSchedule'  
+        "504":
+          description: Таймаут выполнения запроса
+          content: {}
+        default:
+          description: Другие ошибки
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      tags:
+      - CRL
+      operationId: CrlScheduleAction
+      parameters:
+      - name: crl_id
+        in: path
+        description: Идентификатор запроса на соедиинение КРЛ
+        required: true
+        schema:
+          type: integer
+        example: 10
+      - name: sc_id
+        in: query
+        description: Идентификатор КА
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+        example: 10 
+      - name: subscr_type
+        in: query
+        description: Тип подписки
+        required: true
+        schema: 
+          type: string
+          enum: [ScheduleReady, CrlStatus]
+          default: ScheduleReady   
+      requestBody:
+        description: Параметры подписки на уведомление 
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CrlSubscribe'
+        required: true
+      responses:
+        "200":
+          description: Подписка зарегестрирована
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  crl_id: {type: integer, description: Идентификатор запроса}
+                  sc_id: {type: integer, description: Идентификатор КА }
+        "504":
+          description: Таймаут выполнения запроса
+          content: {}
+        default:
+          description: Другие ошибки
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/Error'  
   
   
   /almanac:
@@ -430,6 +572,20 @@ paths:
                 $ref: '#/components/schemas/Error'
 components:
   schemas:
+    
+    CrlConnection:
+      type: object
+      properties:
+        name: {type: string}
+
+    CrlSubscribe:
+      type: object
+      properties:
+        ulr: {type: string, description: URL для получения уведомлений}
+        subscr_id: {type: integer, description: Идентификатор подписки на статус сеанса КРЛ}
+        crl_status: {type: string, enum: [Openning, Opened, Closing, Closed], description: Статус сеанса КРЛ}
+
+    
     AlmanacInfo:
       type: object
       properties:
@@ -458,7 +614,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AlmanacRecord'
-            
+
     Error:
       required:
       - code
