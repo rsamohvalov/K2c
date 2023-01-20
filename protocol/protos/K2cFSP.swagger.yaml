@@ -430,35 +430,35 @@ paths:
                 $ref: '#/components/schemas/Error'
 components:
   schemas:
-    ConnectionId:
+    AlmanacInfo:
       type: object
       properties:
-        fp_id:
-          type: number
-          description: Идентификатор ФЧ БРТК
-          example: 1
-        rm_id:
-          type: number
-          description: Идентификатор ПММ
-          example: 2
-      example:
-        fp_id: 1
-        rm_id: 2
-    Warning:
-      type: object
-      properties:
-        id:
-          type: number
-          description: Идентификатор уведомления
         time:
-          type: number
-          description: Время по наступления события в сек
-        reason:
+          type: integer
+          description: Время расчета
+        version:
+          type: integer
+          description: Версия альманаха
+        crc:
+          type: integer
+          description: Контрольная сумма альманаха
+    
+    AlmanacRecord:
+      type: object
+      properties:
+        value: 
           type: string
-          description: Причина уведомления
-          enum:
-          - planned
-          - unplanned
+
+    Almanac:
+      type: object
+      properties:
+        info: 
+          $ref: '#/components/schemas/AlmanacInfo'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/AlmanacRecord'
+            
     Error:
       required:
       - code
