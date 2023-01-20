@@ -7,6 +7,38 @@ info:
 
 components:
   schemas:
+    CrlConnection:
+      type: object
+      properties:
+        start: {type: integer, description: Время начала соединения }
+        duration: {type: integer, description: Продолжительность соединения }
+        priority: {type: integer, description: Приоритет соединения }
+        almanac:
+          $ref: '#/components/schemas/Almanac'
+
+
+    CrlScheduleRow: 
+      type: object
+      properties:
+        start: {type: integer, description: Время начала соединения }
+        duration: {type: integer, description: Продолжительность соединения }
+      
+    CrlSchedule:
+      type: object
+      properties:
+        windows: 
+          type: array
+          items:
+            $ref: '#/components/schemas/CrlScheduleRow'
+
+    CrlSubscribe:
+      type: object
+      properties:
+        ulr: {type: string, description: URL для получения уведомлений}
+        subscr_id: {type: integer, description: Идентификатор подписки на статус сеанса КРЛ}
+        crl_status: {type: string, enum: [Openning, Opened, Closing, Closed], description: Статус сеанса КРЛ}
+
+    
     AlmanacInfo:
       type: object
       properties:

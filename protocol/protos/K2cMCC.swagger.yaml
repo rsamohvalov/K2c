@@ -223,6 +223,72 @@ paths:
               schema:
                 $ref: 'K2cCommonData.yaml#/components/schemas/Error'  
 
-components:
-  schemas:
-    
+  /crl/schedule:
+    post:
+      tags:
+      - CRL
+      operationId: CrlScheduleReadyNotification
+      requestBody:
+        description: Данные подписки
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              type: object
+              properties:
+                crl_id: {type: integer, description: Идентификатор запроса на сеанс КРЛ}
+                sc_id: {type: integer, description: Идентификатор КА}
+        required: true
+      responses:
+        "200":
+          description: Уведомление получено
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  crl_id: {type: integer, description: Идентификатор запроса на сеанс КРЛ}
+        "404":
+          description: Идентификатор не найден
+          content: {} 
+        "504":
+          description: Таймаут выполнения запроса
+          content: {}
+        default:
+          description: Другие ошибки
+          content: {}
+  /crl/status:
+    post:
+      tags:
+      - CRL
+      operationId: CrlStatusNotification
+      requestBody:
+        description: Данные подписки
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              type: object
+              properties:
+                crl_id: {type: integer, description: Идентификатор запроса на сеанс КРЛ}
+                sc_id: {type: integer, description: Идентификатор КА}
+                subscr_id: {type: integer, description: Идентификатор подписки на статус сеанса КРЛ}
+                crl_status: {type: string, enum: [Openning, Opened, Closing, Closed], description: Статус сеанса КРЛ}
+        required: true
+      responses:
+        "200":
+          description: Уведомление получено
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  subscr_id: {type: integer, description: Идентификатор подписки на статус сеанса КРЛ}
+        "404":
+          description: Идентификатор не найден
+          content: {} 
+        "504":
+          description: Таймаут выполнения запроса
+          content: {}
+        default:
+          description: Другие ошибки
+          content: {}
+                

@@ -21,17 +21,13 @@ paths:
         in: path
         description: Идентификатор МПС ШЛС
         required: true
-        style: simple
-        explode: false
         schema:
           type: integer
         example: 10
       - name: subscr_id
-        in: query
+        in: path
         description: Идентификатор подписки
         required: true
-        style: simple
-        explode: false
         schema:
           type: integer
         example: 10  
@@ -40,7 +36,7 @@ paths:
         content:
           application/json;charset=UTF-8:
             schema:
-              $ref: '#/components/schemas/Almanac'
+              $ref: 'K2cCommonData.yaml#/components/schemas/Almanac'
         required: true
       responses:
         "200":
@@ -54,7 +50,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: 'K2cCommonData.yaml#/components/schemas/Error'
   
   /crl:
     post:
@@ -66,7 +62,6 @@ paths:
         in: query
         description: Идентификатор запроса на соедиинение КРЛ
         required: true
-        style: simple
         explode: false
         schema:
           type: integer
@@ -75,7 +70,6 @@ paths:
         in: query
         description: Идентификатор КА
         required: true
-        style: simple
         explode: false
         schema:
           type: integer
@@ -124,14 +118,22 @@ paths:
         in: query
         description: Идентификатор КА
         required: true
-        style: simple
         explode: false
         schema:
           type: integer
         example: 10  
       responses:
+        "102":
+          description: Расчет в процессе
+          content: {}
+        "204":
+          description: Подходящих соединений не найдено
+          content: {}
+        "404":
+          description: Запрос не найден
+          content: {}  
         "200":
-          description: Запрос на расчет принят
+          description: Результат расчета
           content:
             application/json:
               schema:
@@ -161,7 +163,6 @@ paths:
         in: query
         description: Идентификатор КА
         required: true
-        style: simple
         explode: false
         schema:
           type: integer
@@ -200,94 +201,44 @@ paths:
             application/json;charset=UTF-8:
               schema:
                 $ref: '#/components/schemas/Error'  
-  
-  
-  /almanac:
-    get:
+    delete:
       tags:
-      - Almanac
-      operationId: AlmanacRequest
+      - CRL
+      operationId: CrlOrStatusCancel
       parameters:
-      - name: fsp_id
-        in: query
-        description: Идентификатор МПС ШЛС
+      - name: crl_id
+        in: path
+        description: Идентификатор запроса на соедиинение КРЛ
         required: true
-        style: simple
-        explode: false
         schema:
           type: integer
         example: 10
-      - name: filter
+      - name: sc_id
         in: query
-        description: Идентификаторы КА
-        required: false
-        style: form
-        explode: true
-        schema:
-          type: array
-          items:
-            type: integer
-      responses:
-        "200":
-          description: Содержимое альманаха
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                $ref: '#/components/schemas/Almanac'
-        "404":
-          description: Данные по запросу альманаха не найдены
-          content: {}
-        "504":
-          description: Таймаут выполнения запроса
-          content: {}
-        default:
-          description: Другие ошибки
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                $ref: '#/components/schemas/Error'
-  
-  /almanac/subscribe:
-    post:
-      tags:
-      - Almanac
-      operationId: AlmanacUpdateSubscribe
-      parameters:
-      - name: fsp_id
-        in: query
-        description: Идентификатор МПС ШЛС
+        description: Идентификатор КА
         required: true
-        style: simple
         explode: false
         schema:
           type: integer
-        example: 10
+        example: 10 
       - name: subscr_id
         in: query
-        description: Идентификатор подписки
-        required: true
-        style: simple
+        description: Идентификатор запроса на уведомление о состоянии КРЛ
+        required: false
         explode: false
         schema:
           type: integer
         example: 10  
-      requestBody:
-        description: Фильтр по идентификаторам КА
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/KaIdFilter'
-        required: true
       responses:
         "200":
-          description: Подписка зарегистрирована
+          description: Отменено успешно
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  id: {type: integer, description: Идентификатор подписки}
-                  url: {type: string, description: URL подписки }
+                  cancel_type: {type: string, enum: [CRL, CrlStatusSubscription], description: Что отменено}
+                  id: {type: integer, description: Идентификатор отмененного действия}    
         "504":
           description: Таймаут выполнения запроса
           content: {}
@@ -297,334 +248,4 @@ paths:
             application/json;charset=UTF-8:
               schema:
                 $ref: '#/components/schemas/Error'
-  
-  /almanac/subscribe/{subscr_id}:  
-    put:
-      tags:
-      - Almanac
-      operationId: AlmanacChangeUpdateSubscription
-      parameters:
-      - name: fsp_id
-        in: query
-        description: Идентификатор МПС ШЛС
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: integer
-        example: 10
-      - name: subscr_id
-        in: path
-        description: Идентификатор подписки
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: integer
-        example: 10  
-      requestBody:
-        description: Фильтр по идентификаторам КА
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/KaIdFilter'
-        required: true
-      responses:
-        "200":
-          description: Подписка обновлена
-          content:
-             application/json:
-              schema:
-                type: integer
-                description: Идентификатор подписки        
-        "504":
-          description: Таймаут выполнения запроса
-          content: {}
-        default:
-          description: Другие ошибки
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                $ref: '#/components/schemas/Error'
-    delete:
-      tags:
-      - Almanac
-      operationId: AlmanacDeleteUpdateSubscription
-      parameters:
-      - name: fsp_id
-        in: query
-        description: Идентификатор МПС ШЛС
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: integer
-        example: 10
-      - name: subscr_id
-        in: query
-        description: Идентификатор подписки
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: integer
-        example: 10  
-      responses:
-        "200":
-          description: Подписка отменена
-          content: {}
-        "504":
-          description: Таймаут выполнения запроса
-          content: {}
-        default:
-          description: Другие ошибки
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                $ref: '#/components/schemas/Error'  
 
-
-
-  /connections:
-    post:
-      tags:
-      - Connections
-      summary: Метод для установления P2r соединения
-      operationId: SetupConnection
-      requestBody:
-        description: Идентификатор ФЧ БРТК
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/ConnectionId'
-        required: true
-      responses:
-        "200":
-          description: Соединение установлено
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                $ref: '#/components/schemas/ConnectionId'
-        "504":
-          description: Таймаут выполнения запроса
-          content: {}
-        default:
-          description: Другие ошибки
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                $ref: '#/components/schemas/Error'
-  
-  /connections/{rm_id}:
-    delete:
-      tags:
-      - Connection
-      summary: Метод для закрытия P2r соединения
-      operationId: ReleaseConnection
-      parameters:
-      - name: rm_id
-        in: path
-        description: Идентификатор ПММ
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: number
-        example: 10
-      - name: fp_id
-        in: query
-        description: Идентификатор ФЧ БРТК
-        required: true
-        style: form
-        explode: true
-        schema:
-          type: number
-        example: 1
-      - name: reason
-        in: query
-        description: Причина закрытия соединения
-        required: false
-        style: form
-        explode: true
-        schema:
-          type: string
-          enum:
-          - planned
-          - unplanned
-        example: planned
-      responses:
-        "200":
-          description: Соединение закрыто
-          content: {}
-        "404":
-          description: Соединение p2r не установлено
-          content: {}
-        default:
-          description: Другие ошибки
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /connections/{rm_id}/warnings:
-    post:
-      tags:
-      - Warnings
-      summary: Метод для отправки уведомлений
-      operationId: SendWarning
-      parameters:
-      - name: rm_id
-        in: path
-        description: Идентификатор ПММ
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: number
-        example: 10
-      - name: fp_id
-        in: query
-        description: Идентификатор ФЧ БРТК
-        required: true
-        style: form
-        explode: true
-        schema:
-          type: number
-        example: 1
-      - name: warning_type
-        in: query
-        description: Тип уведомления
-        required: true
-        style: form
-        explode: true
-        schema:
-          type: string
-          enum:
-          - terminate
-          - restore
-          default: terminate
-        example: terminate
-      requestBody:
-        description: Информация об уведомлении
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/Warning'
-        required: true
-      responses:
-        "200":
-          description: Уведомление получено
-          content: {}
-        "404":
-          description: Соединение p2r не установлено
-          content: {}
-        default:
-          description: Другие ошибки
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /connections/{rm_id}/warnings/{warning_id}:
-    delete:
-      tags:
-      - Warnings
-      summary: Метод для отмены уведомлений
-      operationId: DeleteWarning
-      parameters:
-      - name: rm_id
-        in: path
-        description: Идентификатор ПММ
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: number
-        example: 10
-      - name: warning_id
-        in: path
-        description: Идентификатор уведомления
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: number
-        example: 100500
-      - name: fp_id
-        in: query
-        description: Идентификатор ФЧ БРТК
-        required: true
-        style: form
-        explode: true
-        schema:
-          type: number
-        example: 1
-      responses:
-        "200":
-          description: Уведомление отменено
-          content: {}
-        "404":
-          description: Соединение p2r не установлено
-          content: {}
-        default:
-          description: Другие ошибки
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                $ref: '#/components/schemas/Error'
-components:
-  schemas:
-    
-    CrlConnection:
-      type: object
-      properties:
-        name: {type: string}
-
-    CrlSubscribe:
-      type: object
-      properties:
-        ulr: {type: string, description: URL для получения уведомлений}
-        subscr_id: {type: integer, description: Идентификатор подписки на статус сеанса КРЛ}
-        crl_status: {type: string, enum: [Openning, Opened, Closing, Closed], description: Статус сеанса КРЛ}
-
-    
-    AlmanacInfo:
-      type: object
-      properties:
-        time:
-          type: integer
-          description: Время расчета
-        version:
-          type: integer
-          description: Версия альманаха
-        crc:
-          type: integer
-          description: Контрольная сумма альманаха
-    
-    AlmanacRecord:
-      type: object
-      properties:
-        value: 
-          type: string
-
-    Almanac:
-      type: object
-      properties:
-        info: 
-          $ref: '#/components/schemas/AlmanacInfo'
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/AlmanacRecord'
-
-    Error:
-      required:
-      - code
-      - message
-      type: object
-      properties:
-        code:
-          type: integer
-          format: int32
-          example: 127
-        message:
-          type: string
-          example: Сеть недоступна
