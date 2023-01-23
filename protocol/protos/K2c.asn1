@@ -1,5 +1,5 @@
 
-P2r DEFINITIONS AUTOMATIC TAGS ::= BEGIN
+K2c DEFINITIONS AUTOMATIC TAGS ::= BEGIN
 
 ProtocolVersion ::= SEQUENCE {
     major-version INTEGER(0..32),
@@ -7,8 +7,8 @@ ProtocolVersion ::= SEQUENCE {
 }
 
 ConnectionId ::= SEQUENCE {
-	fp-id INTEGER(0..255),
-    rm-id INTEGER(0..255)
+	fps-id INTEGER(0..255),
+    mcc-id INTEGER(0..255)
 }
 
 Message ::= SEQUENCE {
@@ -20,22 +20,39 @@ Message ::= SEQUENCE {
 
 MessageTypes ::= ENUMERATED {
     none (0),
-    id-p2r-connection-setup-request (1),
-    id-p2r-connection-setup-response (2),
-    id-p2r-connection-release (3),
-    id-p2r-connection-release-ack (4),
-    id-p2r-session-termination-warning (5),
-    id-p2r-session-termination-warning-ack (6),
-    id-p2r-session-termination-warning-cancel (7),
-    id-p2r-session-restore-warning (8),
-    id-p2r-session-restore-warning-ack (9),
+    id-k2c-almanac-request (1),
+    id-k2c-almanac-response (2),
+    id-k2c-update-almanac-subscribe-request (3),
+    id-k2c-update-almanac-subscribe-response (4),
+    id-k2c-update-subscription-request (5),
+    id-k2c-update-subscription-response (6),
+    id-k2c-delete-subscription-request (7),
+    id-k2c-delete-subscription-response (8),
+    id-k2c-update-almanac-notification (9),
+    id-k2c-update-almanac-response (10),
+    id-k2c-echo-request (11),
+    id-k2c-echo-response (12),
+    id-k2c-crl-setup-request (13),
+    id-k2c-crl-setup-response (14),
+    id-k2c-crl-schedule-request (15),
+    id-k2c-crl-schedule-response (16),
+    id-k2c-schedule-ready-subscribe (17),
+    id-k2c-schedule-ready-subscribe-result (18),
+    id-k2c-schedule-ready-notification (19),
+    id-k2c-schedule-ready-notification-ack (20),
+    id-k2c-status-subscribe (21),
+    id-k2c-status-subscribe-result (22),
+    id-k2c-status-notification (23),
+    id-k2c-status-notification-ack (24),
+    id-k2c-status-cancel (25),
+    id-k2c-status-cancel-ack (26),
     ...
 }
 
 Cause ::= ENUMERATED {undefined (0), success (1), timeout (2), error (3), no-resources (4), ... }
 Reason ::= ENUMERATED { unknown (0), planned (1), unplanned (2), ...}
 
-P2RConnectionSetupResponse ::= SEQUENCE {
+K2cAlmanacRequest ::= SEQUENCE {
     cause Cause,
     ...
 }
